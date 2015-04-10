@@ -47,10 +47,10 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   MotorCommands.msg
-# )
+add_message_files(
+  FILES
+  trash_location.msg
+)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -67,11 +67,11 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs
-#   sensor_msgs
-# )
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+  sensor_msgs
+)
 
 ###################################
 ## catkin specific configuration ##
@@ -111,7 +111,7 @@ add_executable(trash_detect_node src/trash_detect_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(trash_detect_node trash_detect_generate_messages_cpp)
+add_dependencies(trash_detect_node trash_detect_generate_messages_cpp TrashDetector)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(trash_detect_node
