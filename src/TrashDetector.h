@@ -14,7 +14,6 @@ private:
 
 public:
 	TrashDetector(ros::NodeHandle rosNode);
-	void test();
 
 	void processImage(const sensor_msgs::ImageConstPtr& msg);
 
