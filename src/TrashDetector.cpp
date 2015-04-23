@@ -6,6 +6,8 @@
 
 #include "trash_detect/trash_location.h"
 #include "TrashDetector.h"
+#include "trash.cpp"
+#include "img_process.cpp"
 
 TrashDetector::TrashDetector(ros::NodeHandle rosNode)
 {
@@ -20,6 +22,11 @@ void TrashDetector::processImage(const sensor_msgs::ImageConstPtr& msg)
 {
 	// Convert the ROS image to an OpenCV Image
 	cv_bridge::CvImagePtr cv_ptr;
+	Mat camerafeed = cv_ptr->image;
+	Mat threshold;
+	Mat HSV;
+	Mat RGB;
+	Mat RGBthreshed;
 
 	try
 	{
@@ -32,12 +39,40 @@ void TrashDetector::processImage(const sensor_msgs::ImageConstPtr& msg)
 	}
 
 	// Do things to the image
-	if(cv_ptr->image.rows > 60 && cv_ptr->image.cols > 60)
-	{
-		cv::circle(cv_ptr->image, cv::Point(50, 50), 10, CV_RGB(255,0,0));
+	bool calibrate = false;
+	
+
+	if(calibrate){
+		createTrackbars();
 	}
-	cv::imshow(windowName,cv_ptr->image);
-	cv::waitKey(3);
+		cvtColor(cv_ptr->image,HSV,COLOR_BGR2HSV);
+
+		if(calibrate==true)
+		{
+			cvtColor(cv_ptr->image,HSV,COLOR_BGR2HSV);
+			inRange(HSV,Scalar(H_MIN,S_MIN,V_MIN),Scalar(H_MAX,S_MAX,V_MAX), threshold);
+			morphOps(threshold);
+			imshow(windowName2,threshold);
+			trackFilteredObject(threshold,HSV,cv_ptr->image);
+		}
+
+		else
+		{
+			Trash pepsi("pepsi can");
+			Trash coke("coke can");
+	
+			cvtColor(cv_ptr->image,HSV,COLOR_BGR2HSV);
+			inRange(HSV,pepsi.getHSVmin(),pepsi.getHSVmax(),threshold);
+			morphOps(threshold);
+			trackFilteredObject(pepsi,threshold,HSV,cv_ptr->image);
+
+			cvtColor(cv_ptr->image,HSV,COLOR_BGR2HSV);
+			inRange(HSV,coke.getHSVmin(),coke.getHSVmax(),threshold);
+			morphOps(threshold);
+			trackFilteredObject(coke,threshold,HSV,cv_ptr->image);
+		}
+		imshow(windowName,cv_ptr->image);
+		waitKey(3);
 	
 	// Publish sample trash location
 	trash_detect::trash_location locationMsg;

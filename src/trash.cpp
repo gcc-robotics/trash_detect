@@ -125,9 +125,4 @@ double Trash::getAngle(){
 }
 
 
-//names that will appear at the top of each window
-const std::string windowName = "Original Image";
-const std::string windowName1 = "HSV Image";
-const std::string windowName2 = "Thresholded Image";
-const std::string windowName3 = "After Morphological Operations";
-const std::string trackbarWindowName = "Trackbars";
+
