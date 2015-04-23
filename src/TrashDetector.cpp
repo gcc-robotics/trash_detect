@@ -12,7 +12,7 @@ TrashDetector::TrashDetector(ros::NodeHandle rosNode)
 	this->node = rosNode;
 
 	// Subscribe to the camera feed and advertise trash locations
-	this->subscriber = this->node.subscribe("/camera/image_raw", 1, &TrashDetector::processImage, this);
+	this->subscriber = this->node.subscribe("/image_raw", 1, &TrashDetector::processImage, this);
 	this->publisher = node.advertise<trash_detect::trash_location>("/trash_location", 1);
 }
 
@@ -36,6 +36,8 @@ void TrashDetector::processImage(const sensor_msgs::ImageConstPtr& msg)
 	{
 		cv::circle(cv_ptr->image, cv::Point(50, 50), 10, CV_RGB(255,0,0));
 	}
+	cv::imshow(windowName,cv_ptr->image);
+	cv::waitKey(3);
 	
 	// Publish sample trash location
 	trash_detect::trash_location locationMsg;

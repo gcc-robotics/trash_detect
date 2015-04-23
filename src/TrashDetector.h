@@ -4,6 +4,7 @@
 #ifndef __TrashDetector_H_
 #define __TrashDetector_H_
 
+
 class TrashDetector
 {
 private:
