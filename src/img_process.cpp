@@ -1,13 +1,14 @@
+#include "ros/ros.h"
 const std::string windowName = "Original Image";
 const std::string windowName1 = "HSV Image";
 const std::string windowName2 = "Thresholded Image";
 const std::string windowName3 = "After Morphological Operations";
 const std::string trackbarWindowName = "Trackbars";
-
+//std::vector<Trash> sodacans;
 
 void on_trackbar( int, void* )
 {
-
+	
 }
 
 std::string intToString(int number){
@@ -18,8 +19,8 @@ std::string intToString(int number){
 	return ss.str();
 }
 
-void createTrackbars()
-{
+void createTrackbars(){
+	
 	namedWindow(trackbarWindowName,0);
 	char TrackbarName[50];
 
@@ -35,7 +36,7 @@ void createTrackbars()
 	sprintf( TrackbarName, "G_MAX", G_MAX);
 	sprintf( TrackbarName, "B_MIN", B_MIN);
 	sprintf( TrackbarName, "B_MAX", B_MAX);
-
+   
 	createTrackbar( "H_MIN", trackbarWindowName, &H_MIN, H_MAX, on_trackbar );
 	createTrackbar( "H_MAX", trackbarWindowName, &H_MAX, H_MAX, on_trackbar );
 	createTrackbar( "S_MIN", trackbarWindowName, &S_MIN, S_MAX, on_trackbar );
@@ -51,27 +52,67 @@ void createTrackbars()
 
 
 }
+bool pickupZone(int X) {
+	bool inZone;	
+	if (X < areaRight && X > areaLeft) 
+		inZone = true;
+	else inZone = false;
+	return inZone;
+}
+
+bool Left(int X){
+	bool inZone;
+	if (X > 0 && X < areaLeft)
+		inZone = true;
+	else inZone = false;
+	return inZone;
+}
+
+bool Right(int X){
+	bool inZone;
+	if (X > areaLeft && X < FRAME_WIDTH)
+		inZone = true;
+	else inZone = false;
+	return inZone;
+}
+
 void drawObject(std::vector<Trash> trash, Mat &frame){
 	
 	for (int i = 0; i < trash.size(); i++){
+	
+	int distance = trash.at(i).getDistance();
+	int angle = trash.at(i).getAngle();
 
 	cv::circle(frame,cv::Point(trash.at(i).getXPos(),trash.at(i).getYPos()),5,cv::Scalar(0,0,255));
-	cv::putText(frame,intToString(trash.at(i).getXPos())+ " , " + intToString(trash.at(i).getYPos()),cv::Point(trash.at(i).getXPos(), trash.at(i).getYPos()+20),1,1,Scalar(0,255,0));
-	cv::putText(frame,"Distance: "+ intToString(trash.at(i).getDistance()) + " cm",cv::Point(trash.at(i).getXPos()+10,trash.at(i).getYPos()-10),1,1,trash.at(i).getColour());
-	cv::putText(frame,trash.at(i).getType(),cv::Point(trash.at(i).getXPos(),trash.at(i).getYPos()-30),1,2,trash.at(i).getColour());
-	cv::putText(frame,"Angle: "+ intToString(trash.at(i).getAngle()) + " degrees",cv::Point(trash.at(i).getXPos()+5,trash.at(i).getYPos()+10),1,1,trash.at(i).getColour());
+	cv::putText(frame,intToString(trash.at(i).getXPos())+ " , " 
+		+ intToString(trash.at(i).getYPos()),cv::Point(trash.at(i).getXPos(), trash.at(i).getYPos()+20),1,1,Scalar(0,255,0));
+	cv::putText(frame,"Distance: "+ intToString(trash.at(i).getDistance()) 
+		+ " cm",cv::Point(trash.at(i).getXPos()+10,trash.at(i).getYPos()-10),1,1,trash.at(i).getColor());
+	cv::putText(frame,trash.at(i).getType(),cv::Point(trash.at(i).getXPos(),trash.at(i).getYPos()-30),1,2,trash.at(i).getColor());
+	cv::putText(frame,"Angle: "+ intToString(trash.at(i).getAngle()) 
+		+ " degrees",cv::Point(trash.at(i).getXPos()+5,trash.at(i).getYPos()+10),1,1,trash.at(i).getColor());
+	ROS_INFO("\n\n\t\t\t\tDistance: %i Angle: %i", distance, angle);
 
+	if (pickupZone(trash.at(i).getXPos())) {
+		ROS_INFO("Trash in pickup zone");
+	}
+	else if (Left(trash.at(i).getXPos())){
+		ROS_INFO("Trash detected to the left of pickup zone");
+	}
+	else if (Right(trash.at(i).getXPos())){
+		ROS_INFO("Trash detected to the right of pickup zone");
+	}
 	}
 }
-void morphOps(Mat &thresh){
 
+
+void morphOps(Mat &thresh){
 
 	Mat erodeElement = getStructuringElement( MORPH_RECT,Size(4,4));
 	Mat dilateElement = getStructuringElement( MORPH_RECT,Size(10,10));
 
 	erode(thresh,thresh,erodeElement);
 	erode(thresh,thresh,erodeElement);
-
 
 	dilate(thresh,thresh,dilateElement);
 	dilate(thresh,thresh,dilateElement);
@@ -83,23 +124,19 @@ void trackFilteredObject(Mat threshold,Mat HSV, Mat &cameraFeed){
 
 	Mat temp;
 	threshold.copyTo(temp);
-	//these two vectors needed for output of findContours
 	std::vector< std::vector<Point> > contours;
 	std::vector<Vec4i> hierarchy;
-	//find contours of filtered image using openCV findContours function
 	findContours(temp,contours,hierarchy,CV_RETR_CCOMP,CV_CHAIN_APPROX_SIMPLE );
-	//use moments method to find our filtered object
+
 	double refArea = 0;
 	bool objectFound = false;
 	if (hierarchy.size() > 0) {
 		int numObjects = hierarchy.size();
-		//if number of objects greater than MAX_NUM_OBJECTS we have a noisy filter
 		if(numObjects<MAX_NUM_OBJECTS){
 			for (int index = 0; index >= 0; index = hierarchy[index][0]) {
 
 				Moments moment = moments((cv::Mat)contours[index]);
 				double area = moment.m00;
-
 
 				if(area>MIN_OBJECT_AREA){
 
@@ -116,8 +153,9 @@ void trackFilteredObject(Mat threshold,Mat HSV, Mat &cameraFeed){
 
 
 			}
-
+		
 			if(objectFound ==true){
+				
 				drawObject(sodacans,cameraFeed);}
 
 		}else putText(cameraFeed,"TOO MUCH NOISE! ADJUST FILTER",Point(0,50),1,2,Scalar(0,0,255),2);
@@ -131,22 +169,22 @@ void trackFilteredObject(Trash trash,Mat threshold,Mat HSV, Mat &cameraFeed){
 
 	Mat temp;
 	threshold.copyTo(temp);
-
+	
 	std::vector< std::vector<Point> > contours;
 	std::vector<Vec4i> hierarchy;
+	
 	findContours(temp,contours,hierarchy,CV_RETR_CCOMP,CV_CHAIN_APPROX_SIMPLE );
-
+	
 	double refArea = 0;
 	bool objectFound = false;
 	if (hierarchy.size() > 0) {
 		int numObjects = hierarchy.size();
-		//if number of objects greater than MAX_NUM_OBJECTS we have a noisy filter
+		
 		if(numObjects<MAX_NUM_OBJECTS){
 			for (int index = 0; index >= 0; index = hierarchy[index][0]) {
 
 				Moments moment = moments((cv::Mat)contours[index]);
 				double area = moment.m00;
-
 
 				if(area>MIN_OBJECT_AREA){
 
@@ -155,9 +193,10 @@ void trackFilteredObject(Trash trash,Mat threshold,Mat HSV, Mat &cameraFeed){
 					soda.setXPos(moment.m10/area);
 					soda.setYPos(moment.m01/area);
 					soda.setType(trash.getType());
-					soda.setColour(trash.getColour());
+					soda.setColor(trash.getColor());
 
 					sodacans.push_back(soda);
+					//ROS_INFO("Distance: %d\tAngle: \n", soda.getDistance(),soda.getAngle());
 
 					objectFound = true;
 
@@ -165,9 +204,8 @@ void trackFilteredObject(Trash trash,Mat threshold,Mat HSV, Mat &cameraFeed){
 
 
 			}
-			//let user know you found an object
 			if(objectFound ==true){
-				//draw object location on screen
+
 				drawObject(sodacans,cameraFeed);}
 
 		}else putText(cameraFeed,"TOO MUCH NOISE! ADJUST FILTER",Point(0,50),1,2,Scalar(0,0,255),2);

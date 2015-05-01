@@ -35,8 +35,10 @@ const int FRAME_HEIGHT = 960;
 //max number of objects to be detected in frame
 const int MAX_NUM_OBJECTS=50;
 //minimum and maximum object area
-const int MIN_OBJECT_AREA = 60*60;
+const int MIN_OBJECT_AREA = 80*80;
 const int MAX_OBJECT_AREA = FRAME_HEIGHT*FRAME_WIDTH/1.5;
+const double areaLeft = FRAME_WIDTH /3.0;		
+const double areaRight = 2.0* FRAME_WIDTH / 3.0;
 
 class Trash
 {
@@ -57,11 +59,11 @@ public:
 	void setRGBmax(Scalar max);
 	std::string getType(){return type;}
 	void setType(std::string t){type = t;}
-	Scalar getColour(){
-		return Colour;
+	Scalar getColor(){
+		return Color;
 	}
-	void setColour(Scalar c){
-		Colour = c;
+	void setColor(Scalar c){
+		Color = c;
 	}
 	double getDistance();
 	double getAngle();
@@ -70,7 +72,7 @@ private:
 	int yPos;
 	std::string type;
 	Scalar HSVmin, HSVmax, RGBmin, RGBmax;
-	Scalar Colour;
+	Scalar Color;
 };
 
 

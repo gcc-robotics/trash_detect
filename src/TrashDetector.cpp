@@ -22,11 +22,6 @@ void TrashDetector::processImage(const sensor_msgs::ImageConstPtr& msg)
 {
 	// Convert the ROS image to an OpenCV Image
 	cv_bridge::CvImagePtr cv_ptr;
-	Mat camerafeed = cv_ptr->image;
-	Mat threshold;
-	Mat HSV;
-	Mat RGB;
-	Mat RGBthreshed;
 
 	try
 	{
@@ -37,48 +32,53 @@ void TrashDetector::processImage(const sensor_msgs::ImageConstPtr& msg)
 		ROS_ERROR("cv_bridge exception: %s", e.what());
 		return;
 	}
+	Mat camerafeed = cv_ptr->image;
+	Mat threshold;
+	Mat HSV;
 
 	// Do things to the image
 	bool calibrate = false;
 	
 
-	if(calibrate){
+	if(calibrate)
+	{
 		createTrackbars();
 	}
+	cvtColor(cv_ptr->image,HSV,COLOR_BGR2HSV);
+
+	if(calibrate==true)
+	{
 		cvtColor(cv_ptr->image,HSV,COLOR_BGR2HSV);
+		inRange(HSV,Scalar(H_MIN,S_MIN,V_MIN),Scalar(H_MAX,S_MAX,V_MAX), threshold);
+		morphOps(threshold);
+		imshow(windowName2,threshold);
+		trackFilteredObject(threshold,HSV,cv_ptr->image);
+	}
 
-		if(calibrate==true)
-		{
-			cvtColor(cv_ptr->image,HSV,COLOR_BGR2HSV);
-			inRange(HSV,Scalar(H_MIN,S_MIN,V_MIN),Scalar(H_MAX,S_MAX,V_MAX), threshold);
-			morphOps(threshold);
-			imshow(windowName2,threshold);
-			trackFilteredObject(threshold,HSV,cv_ptr->image);
-		}
+	else
+	{
+		Trash pepsi("pepsi can");
+		Trash coke("coke can");
 
-		else
-		{
-			Trash pepsi("pepsi can");
-			Trash coke("coke can");
+		cvtColor(cv_ptr->image,HSV,COLOR_BGR2HSV);
+		inRange(HSV,pepsi.getHSVmin(),pepsi.getHSVmax(),threshold);
+		morphOps(threshold);
+		trackFilteredObject(pepsi,threshold,HSV,cv_ptr->image);
+
+		cvtColor(cv_ptr->image,HSV,COLOR_BGR2HSV);
+		inRange(HSV,coke.getHSVmin(),coke.getHSVmax(),threshold);
+		morphOps(threshold);
+		trackFilteredObject(coke,threshold,HSV,cv_ptr->image);
+	}
 	
-			cvtColor(cv_ptr->image,HSV,COLOR_BGR2HSV);
-			inRange(HSV,pepsi.getHSVmin(),pepsi.getHSVmax(),threshold);
-			morphOps(threshold);
-			trackFilteredObject(pepsi,threshold,HSV,cv_ptr->image);
+	imshow(windowName,cv_ptr->image);
+	waitKey(3);
 
-			cvtColor(cv_ptr->image,HSV,COLOR_BGR2HSV);
-			inRange(HSV,coke.getHSVmin(),coke.getHSVmax(),threshold);
-			morphOps(threshold);
-			trackFilteredObject(coke,threshold,HSV,cv_ptr->image);
-		}
-		imshow(windowName,cv_ptr->image);
-		waitKey(3);
-	
 	// Publish sample trash location
 	trash_detect::trash_location locationMsg;
 
-	locationMsg.distance = 5;
-	locationMsg.angle = 7;
+	locationMsg.distance = 20;
+	locationMsg.angle = 30;
 
 	this->publisher.publish(locationMsg);
 }
