@@ -14,7 +14,6 @@ int main(int argc, char **argv)
 
 	// Start trash detector
 	TrashDetector trash = TrashDetector(node);
-	//ROS_INFO(sodacans.at(0).getDistance());
 	ROS_INFO("Press Ctrl-C to kill node.");
 
 	// Spin
