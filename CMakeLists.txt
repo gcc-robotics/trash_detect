@@ -108,15 +108,12 @@ include_directories(
 
 ## Declare a cpp executable
 add_executable(trash_detect_node src/trash_detect_node.cpp)
-
-## Add cmake target dependencies of the executable/library
-## as an example, message headers may need to be generated before nodes
 add_dependencies(trash_detect_node trash_detect_generate_messages_cpp TrashDetector)
+target_link_libraries(trash_detect_node ${catkin_LIBRARIES} )
 
-## Specify libraries to link a library or executable target against
-target_link_libraries(trash_detect_node
-  ${catkin_LIBRARIES} 
-)
+add_executable(calibrate_node src/calibrate_node.cpp)
+add_dependencies(calibrate_node calibrate_generate_messages_cpp Calibrate)
+target_link_libraries(calibrate_node ${catkin_LIBRARIES} )
 
 #############
 ## Install ##

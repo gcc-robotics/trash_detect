@@ -22,8 +22,8 @@ Trash::Trash(std::string name){
 	}
 	if(name=="coke can"){
 
-		setHSVmin(Scalar(0,152,42));
-		setHSVmax(Scalar(60,238,203));
+		setHSVmin(Scalar(0,192,0));
+		setHSVmax(Scalar(256,256,256));
 
 		setColor(Scalar(0,0,255));
 	}

@@ -65,10 +65,10 @@ void TrashDetector::processImage(const sensor_msgs::ImageConstPtr& msg)
 		morphOps(threshold);
 		trackFilteredObject(pepsi,threshold,HSV,cv_ptr->image);
 
-		//cvtColor(cv_ptr->image,HSV,COLOR_BGR2HSV);
-		//inRange(HSV,coke.getHSVmin(),coke.getHSVmax(),threshold);
-		//morphOps(threshold);
-		//trackFilteredObject(coke,threshold,HSV,cv_ptr->image);
+		cvtColor(cv_ptr->image,HSV,COLOR_BGR2HSV);
+		inRange(HSV,coke.getHSVmin(),coke.getHSVmax(),threshold);
+		morphOps(threshold);
+		trackFilteredObject(coke,threshold,HSV,cv_ptr->image);
 	}
 	
 	imshow(windowName,cv_ptr->image);

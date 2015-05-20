@@ -75,7 +75,18 @@ bool Right(int X){
 	else inZone = false;
 	return inZone;
 }
-
+void findObject(std::vector<Trash> trash, Mat &frame){
+	for (int i = 0; i < trash.size(); i++){
+		cv::circle(frame,cv::Point(trash.at(i).getXPos(),trash.at(i).getYPos()),5,cv::Scalar(0,0,255));
+		cv::putText(frame,intToString(trash.at(i).getXPos())+ " , " 
+		+ intToString(trash.at(i).getYPos()),cv::Point(trash.at(i).getXPos(), trash.at(i).getYPos()+20),1,1,Scalar(0,255,0));
+		cv::putText(frame,"Distance: "+ intToString(trash.at(i).getDistance()) 
+		+ " cm",cv::Point(trash.at(i).getXPos()+10,trash.at(i).getYPos()-10),1,1,trash.at(i).getColor());
+		cv::putText(frame,trash.at(i).getType(),cv::Point(trash.at(i).getXPos(),trash.at(i).getYPos()-30),1,2,trash.at(i).getColor());
+		cv::putText(frame,"Angle: "+ intToString(trash.at(i).getAngle()) 
+		+ " degrees",cv::Point(trash.at(i).getXPos()+5,trash.at(i).getYPos()+10),1,1,trash.at(i).getColor());
+	}
+}
 void drawObject(std::vector<Trash> trash, Mat &frame){
 	
 	for (int i = 0; i < trash.size(); i++){
@@ -156,7 +167,7 @@ void trackFilteredObject(Mat threshold,Mat HSV, Mat &cameraFeed){
 		
 			if(objectFound ==true){
 				
-				drawObject(sodacans,cameraFeed);}
+				findObject(sodacans,cameraFeed);}
 
 		}else putText(cameraFeed,"TOO MUCH NOISE! ADJUST FILTER",Point(0,50),1,2,Scalar(0,0,255),2);
 	}
