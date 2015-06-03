@@ -9,6 +9,10 @@
 #include "trash.cpp"
 #include "img_process.cpp"
 
+/**
+Constructor for TrashDetector class
+   @param rosNode 	ros::NodeHandle
+*/
 TrashDetector::TrashDetector(ros::NodeHandle rosNode)
 {
 	this->node = rosNode;
@@ -18,6 +22,11 @@ TrashDetector::TrashDetector(ros::NodeHandle rosNode)
 	this->publisher = node.advertise<trash_detect::trash_location>("/trash_location", 1);
 }
 
+/**
+Callback function for procssing images from subscribed topic
+   @param msg 	const sensor_msgs::ImageConstPtr&
+   @return	void
+*/
 void TrashDetector::processImage(const sensor_msgs::ImageConstPtr& msg)
 {
 	// Convert the ROS image to an OpenCV Image

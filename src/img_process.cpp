@@ -4,13 +4,22 @@ const std::string windowName1 = "HSV Image";
 const std::string windowName2 = "Thresholded Image";
 const std::string windowName3 = "After Morphological Operations";
 const std::string trackbarWindowName = "Trackbars";
-//std::vector<Trash> sodacans;
 
+/**
+Function gets called whenever a trackbar position 
+is changed
+   @return		void
+*/
 void on_trackbar( int, void* )
 {
 	
 }
 
+/**
+Function converts integer to string
+   @param number	int
+   @return		std::string
+*/
 std::string intToString(int number){
 
 
@@ -18,7 +27,11 @@ std::string intToString(int number){
 	ss << number;
 	return ss.str();
 }
+/**
+Function to create trackbars
 
+   @return	void
+*/
 void createTrackbars(){
 	
 	namedWindow(trackbarWindowName,0);
@@ -52,6 +65,13 @@ void createTrackbars(){
 
 
 }
+
+/**
+Function to calculate if x-coordinate of object is in pickup zone
+Pickup zone currently defined in between areaRight and areaLeft
+   @param X 		int
+   @return inZone	bool
+*/
 bool pickupZone(int X) {
 	bool inZone;	
 	if (X < areaRight && X > areaLeft) 
@@ -60,6 +80,12 @@ bool pickupZone(int X) {
 	return inZone;
 }
 
+/**
+Function to calculate if x-coordinate of object is to the left of pickup zone
+Pickup zone currently defined in between areaRight and areaLeft
+   @param X 		int
+   @return inZone	bool
+*/
 bool Left(int X){
 	bool inZone;
 	if (X > 0 && X < areaLeft)
@@ -68,6 +94,12 @@ bool Left(int X){
 	return inZone;
 }
 
+/**
+Function to calculate if x-coordinate of object is to the right of pickup zone
+Pickup zone currently defined in between areaRight and areaLeft
+   @param X 		int
+   @return inZone	bool
+*/
 bool Right(int X){
 	bool inZone;
 	if (X > areaLeft && X < FRAME_WIDTH)
@@ -75,6 +107,13 @@ bool Right(int X){
 	else inZone = false;
 	return inZone;
 }
+
+/**
+Function that takes in vector of Trash objects and openCV Mat image
+   @param trash 	std::vector<Trash>
+   @param &frame	cv::Mat
+   @return	void
+*/
 void findObject(std::vector<Trash> trash, Mat &frame){
 	for (int i = 0; i < trash.size(); i++){
 		cv::circle(frame,cv::Point(trash.at(i).getXPos(),trash.at(i).getYPos()),5,cv::Scalar(0,0,255));
@@ -87,6 +126,13 @@ void findObject(std::vector<Trash> trash, Mat &frame){
 		+ " degrees",cv::Point(trash.at(i).getXPos()+5,trash.at(i).getYPos()+10),1,1,trash.at(i).getColor());
 	}
 }
+
+/**
+Function that takes in vector of Trash objects and openCV Mat image
+   @param trash 	std::vector<Trash>
+   @param &frame	cv::Mat
+   @return	void
+*/
 void drawObject(std::vector<Trash> trash, Mat &frame){
 	
 	for (int i = 0; i < trash.size(); i++){
@@ -116,7 +162,11 @@ void drawObject(std::vector<Trash> trash, Mat &frame){
 	}
 }
 
-
+/**
+Function to erode and dilate whitespace
+   @param &thresh 	cv::Mat
+   @return	void
+*/
 void morphOps(Mat &thresh){
 
 	Mat erodeElement = getStructuringElement( MORPH_RECT,Size(4,4));
@@ -129,7 +179,14 @@ void morphOps(Mat &thresh){
 	dilate(thresh,thresh,dilateElement);
 }
 
-void trackFilteredObject(Mat threshold,Mat HSV, Mat &cameraFeed){
+/**
+Function to be used with calibrate node for tracking objects
+   @param threshold 	cv::Mat
+   @param HSV		cv::Mat
+   @param &cameraFeed	cv::Mat
+   @return	void
+*/
+void trackFilteredObject(Mat threshold, Mat HSV, Mat &cameraFeed){
 
 	std::vector<Trash> sodacans;
 
@@ -173,6 +230,14 @@ void trackFilteredObject(Mat threshold,Mat HSV, Mat &cameraFeed){
 	}
 }
 
+/**
+Function to be used with object_tracking node for tracking trash objects
+   @param trash		Trash
+   @param threshold 	cv::Mat
+   @param HSV		cv::Mat
+   @param &cameraFeed	cv::Mat
+   @return	void
+*/
 void trackFilteredObject(Trash trash,Mat threshold,Mat HSV, Mat &cameraFeed){
 
 	
