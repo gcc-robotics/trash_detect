@@ -6,9 +6,10 @@ const std::string windowName3 = "After Morphological Operations";
 const std::string trackbarWindowName = "Trackbars";
 
 /**
-Function gets called whenever a trackbar position 
-is changed
-   @return		void
+	Function gets called whenever a trackbar position 
+	is changed
+
+	@return	void
 */
 void on_trackbar( int, void* )
 {
@@ -16,9 +17,10 @@ void on_trackbar( int, void* )
 }
 
 /**
-Function converts integer to string
-   @param number	int
-   @return		std::string
+	Function converts integer to string
+
+	@param	number	int
+	@return			std::string
 */
 std::string intToString(int number)
 {
@@ -29,9 +31,9 @@ std::string intToString(int number)
 	return ss.str();
 }
 /**
-Function to create trackbars
+	Function to create trackbars
 
-   @return	void
+	@return	void
 */
 void createTrackbars()
 {
@@ -69,10 +71,11 @@ void createTrackbars()
 }
 
 /**
-Function to calculate if x-coordinate of object is in pickup zone
-Pickup zone currently defined in between areaRight and areaLeft
-   @param X 		int
-   @return inZone	bool
+	Function to calculate if x-coordinate of object is in pickup zone
+	Pickup zone currently defined in between areaRight and areaLeft
+
+	@param	X		int
+	@return	inZone	bool
 */
 bool pickupZone(int X) 
 {
@@ -84,10 +87,11 @@ bool pickupZone(int X)
 }
 
 /**
-Function to calculate if x-coordinate of object is to the left of pickup zone
-Pickup zone currently defined in between areaRight and areaLeft
-   @param X 		int
-   @return inZone	bool
+	Function to calculate if x-coordinate of object is to the left of pickup zone
+	Pickup zone currently defined in between areaRight and areaLeft
+
+	@param	X		int
+	@return	inZone	bool
 */
 bool Left(int X)
 {
@@ -99,10 +103,11 @@ bool Left(int X)
 }
 
 /**
-Function to calculate if x-coordinate of object is to the right of pickup zone
-Pickup zone currently defined in between areaRight and areaLeft
-   @param X 		int
-   @return inZone	bool
+	Function to calculate if x-coordinate of object is to the right of pickup zone
+	Pickup zone currently defined in between areaRight and areaLeft
+
+	@param	X		int
+	@return	inZone	bool
 */
 bool Right(int X)
 {
@@ -114,10 +119,11 @@ bool Right(int X)
 }
 
 /**
-Function that takes in vector of Trash objects and openCV Mat image
-   @param trash 	std::vector<Trash>
-   @param &frame	cv::Mat
-   @return	void
+	Function that takes in vector of Trash objects and openCV Mat image
+
+	@param	trash	std::vector<Trash>
+	@param	&frame	cv::Mat
+	@return	void
 */
 void findObject(std::vector<Trash> trash, Mat &frame)
 {
@@ -135,10 +141,11 @@ void findObject(std::vector<Trash> trash, Mat &frame)
 }
 
 /**
-Function that takes in vector of Trash objects and openCV Mat image
-   @param trash 	std::vector<Trash>
-   @param &frame	cv::Mat
-   @return	void
+	Function that takes in vector of Trash objects and openCV Mat image
+
+	@param	trash	std::vector<Trash>
+	@param	&frame	cv::Mat
+	@return	void
 */
 void drawObject(std::vector<Trash> trash, Mat &frame)
 {
@@ -174,9 +181,10 @@ void drawObject(std::vector<Trash> trash, Mat &frame)
 }
 
 /**
-Function to erode and dilate whitespace
-   @param &thresh 	cv::Mat
-   @return	void
+	Function to erode and dilate whitespace
+
+	@param	&thresh	cv::Mat
+	@return	void
 */
 void morphOps(Mat &thresh)
 {
@@ -191,11 +199,12 @@ void morphOps(Mat &thresh)
 }
 
 /**
-Function to be used with calibrate node for tracking objects
-   @param threshold 	cv::Mat
-   @param HSV		cv::Mat
-   @param &cameraFeed	cv::Mat
-   @return	void
+	Function to be used with calibrate node for tracking objects
+
+	@param	threshold	cv::Mat
+	@param	HSV			cv::Mat
+	@param	&cameraFeed	cv::Mat
+	@return	void
 */
 void trackFilteredObject(Mat threshold, Mat HSV, Mat &cameraFeed)
 {
@@ -243,12 +252,13 @@ void trackFilteredObject(Mat threshold, Mat HSV, Mat &cameraFeed)
 }
 
 /**
-Function to be used with object_tracking node for tracking trash objects
-   @param trash		Trash
-   @param threshold 	cv::Mat
-   @param HSV		cv::Mat
-   @param &cameraFeed	cv::Mat
-   @return	void
+	Function to be used with object_tracking node for tracking trash objects
+
+	@param	trash		Trash
+	@param	threshold	cv::Mat
+	@param	HSV			cv::Mat
+	@param	&cameraFeed	cv::Mat
+	@return	void
 */
 void trackFilteredObject(Trash trash,Mat threshold,Mat HSV, Mat &cameraFeed){
 
