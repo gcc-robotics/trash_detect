@@ -20,7 +20,8 @@ Function converts integer to string
    @param number	int
    @return		std::string
 */
-std::string intToString(int number){
+std::string intToString(int number)
+{
 
 
 	std::stringstream ss;
@@ -32,7 +33,8 @@ Function to create trackbars
 
    @return	void
 */
-void createTrackbars(){
+void createTrackbars()
+{
 	
 	namedWindow(trackbarWindowName,0);
 	char TrackbarName[50];
@@ -72,7 +74,8 @@ Pickup zone currently defined in between areaRight and areaLeft
    @param X 		int
    @return inZone	bool
 */
-bool pickupZone(int X) {
+bool pickupZone(int X) 
+{
 	bool inZone;	
 	if (X < areaRight && X > areaLeft) 
 		inZone = true;
@@ -86,7 +89,8 @@ Pickup zone currently defined in between areaRight and areaLeft
    @param X 		int
    @return inZone	bool
 */
-bool Left(int X){
+bool Left(int X)
+{
 	bool inZone;
 	if (X > 0 && X < areaLeft)
 		inZone = true;
@@ -100,7 +104,8 @@ Pickup zone currently defined in between areaRight and areaLeft
    @param X 		int
    @return inZone	bool
 */
-bool Right(int X){
+bool Right(int X)
+{
 	bool inZone;
 	if (X > areaLeft && X < FRAME_WIDTH)
 		inZone = true;
@@ -114,8 +119,10 @@ Function that takes in vector of Trash objects and openCV Mat image
    @param &frame	cv::Mat
    @return	void
 */
-void findObject(std::vector<Trash> trash, Mat &frame){
-	for (int i = 0; i < trash.size(); i++){
+void findObject(std::vector<Trash> trash, Mat &frame)
+{
+	for (int i = 0; i < trash.size(); i++)
+	{
 		cv::circle(frame,cv::Point(trash.at(i).getXPos(),trash.at(i).getYPos()),5,cv::Scalar(0,0,255));
 		cv::putText(frame,intToString(trash.at(i).getXPos())+ " , " 
 		+ intToString(trash.at(i).getYPos()),cv::Point(trash.at(i).getXPos(), trash.at(i).getYPos()+20),1,1,Scalar(0,255,0));
@@ -133,32 +140,36 @@ Function that takes in vector of Trash objects and openCV Mat image
    @param &frame	cv::Mat
    @return	void
 */
-void drawObject(std::vector<Trash> trash, Mat &frame){
+void drawObject(std::vector<Trash> trash, Mat &frame)
+{
 	
-	for (int i = 0; i < trash.size(); i++){
-	
-	int distance = trash.at(i).getDistance();
-	int angle = trash.at(i).getAngle();
+	for (int i = 0; i < trash.size(); i++)
+	{
+		int distance = trash.at(i).getDistance();
+		int angle = trash.at(i).getAngle();
 
-	cv::circle(frame,cv::Point(trash.at(i).getXPos(),trash.at(i).getYPos()),5,cv::Scalar(0,0,255));
-	cv::putText(frame,intToString(trash.at(i).getXPos())+ " , " 
-		+ intToString(trash.at(i).getYPos()),cv::Point(trash.at(i).getXPos(), trash.at(i).getYPos()+20),1,1,Scalar(0,255,0));
-	cv::putText(frame,"Distance: "+ intToString(trash.at(i).getDistance()) 
-		+ " cm",cv::Point(trash.at(i).getXPos()+10,trash.at(i).getYPos()-10),1,1,trash.at(i).getColor());
-	cv::putText(frame,trash.at(i).getType(),cv::Point(trash.at(i).getXPos(),trash.at(i).getYPos()-30),1,2,trash.at(i).getColor());
-	cv::putText(frame,"Angle: "+ intToString(trash.at(i).getAngle()) 
-		+ " degrees",cv::Point(trash.at(i).getXPos()+5,trash.at(i).getYPos()+10),1,1,trash.at(i).getColor());
-	ROS_INFO("\n\n\t\t\t\tDistance: %i Angle: %i", distance, angle);
+		cv::circle(frame,cv::Point(trash.at(i).getXPos(),trash.at(i).getYPos()),5,cv::Scalar(0,0,255));
+		cv::putText(frame,intToString(trash.at(i).getXPos())+ " , " 
+			+ intToString(trash.at(i).getYPos()),cv::Point(trash.at(i).getXPos(), trash.at(i).getYPos()+20),1,1,Scalar(0,255,0));
+		cv::putText(frame,"Distance: "+ intToString(trash.at(i).getDistance()) 
+			+ " cm",cv::Point(trash.at(i).getXPos()+10,trash.at(i).getYPos()-10),1,1,trash.at(i).getColor());
+		cv::putText(frame,trash.at(i).getType(),cv::Point(trash.at(i).getXPos(),trash.at(i).getYPos()-30),1,2,trash.at(i).getColor());
+		cv::putText(frame,"Angle: "+ intToString(trash.at(i).getAngle()) 
+			+ " degrees",cv::Point(trash.at(i).getXPos()+5,trash.at(i).getYPos()+10),1,1,trash.at(i).getColor());
+		ROS_INFO("\n\n\t\t\t\tDistance: %i Angle: %i", distance, angle);
 
-	if (pickupZone(trash.at(i).getXPos())) {
-		ROS_INFO("Trash in pickup zone");
-	}
-	else if (Left(trash.at(i).getXPos())){
-		ROS_INFO("Trash detected to the left of pickup zone");
-	}
-	else if (Right(trash.at(i).getXPos())){
-		ROS_INFO("Trash detected to the right of pickup zone");
-	}
+		if (pickupZone(trash.at(i).getXPos())) 
+		{
+			ROS_INFO("Trash in pickup zone");
+		}
+		else if (Left(trash.at(i).getXPos()))
+		{
+			ROS_INFO("Trash detected to the left of pickup zone");
+		}
+		else if (Right(trash.at(i).getXPos()))
+		{
+			ROS_INFO("Trash detected to the right of pickup zone");
+		}
 	}
 }
 
@@ -167,8 +178,8 @@ Function to erode and dilate whitespace
    @param &thresh 	cv::Mat
    @return	void
 */
-void morphOps(Mat &thresh){
-
+void morphOps(Mat &thresh)
+{
 	Mat erodeElement = getStructuringElement( MORPH_RECT,Size(4,4));
 	Mat dilateElement = getStructuringElement( MORPH_RECT,Size(10,10));
 
@@ -186,7 +197,8 @@ Function to be used with calibrate node for tracking objects
    @param &cameraFeed	cv::Mat
    @return	void
 */
-void trackFilteredObject(Mat threshold, Mat HSV, Mat &cameraFeed){
+void trackFilteredObject(Mat threshold, Mat HSV, Mat &cameraFeed)
+{
 
 	std::vector<Trash> sodacans;
 
